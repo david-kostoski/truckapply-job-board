@@ -20,6 +20,7 @@ class Job extends Model
         'application_deadline',
         'status',
         'user_id',
+        'category_id',
     ];
 
     public function user()
