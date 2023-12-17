@@ -20,4 +20,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/jobs', 'JobController@index')->name('jobs.index');
+Route::get('/jobs', [App\Http\Controllers\JobController::class, 'index'])->name('jobs.index');
+Route::post('/jobs', [App\Http\Controllers\JobController::class, 'store'])->name('jobs.create');
+
+

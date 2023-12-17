@@ -3,83 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TruckApply.com</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+    <title>Your Job Board | Find & Post Jobs</title>
+    @include('layouts.partials.head')
 </head>
 <body>
-<header class="container-fluid bg-primary text-white p-3 mb-5">
-    <h1>TruckApply.com</h1>
-    <p>Built for Truckers by Truckers - Find your dream job today!</p>
-</header>
-<main class="container">
-    <section class="row">
-        <div class="col-md-8">
-            <h2>Search for jobs</h2>
-            <form method="GET" action="{{ route('jobs.index') }}">
-                <div class="form-group row">
-                    <label for="keyword" class="col-sm-2 col-form-label">Keyword</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Job title, keyword, or company">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="location" class="col-sm-2 col-form-label">Location</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="location" name="location" placeholder="City, state, or zip code">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="categories" class="col-sm-2 col-form-label">Category</label>
-                    <div class="col-sm-10">
-                        <select class="form-control" id="categories" name="category">
-                            <option value="">All Categories</option>
-                            @if (isset($categories))
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Search Jobs</button>
-            </form>
-        </div>
-        <div class="col-md-4">
+@include('layouts.partials.header')
+
+<main class="container mt-5">
+    @if (isset($featuredJobs) && count($featuredJobs) > 0)
+        <section class="featured-jobs mb-5">
             <h2>Featured Jobs</h2>
-            @if (isset($featuredJobs) && $featuredJobs->count())
-                <ul class="list-group">
-                    @foreach ($featuredJobs as $job)
-                        <li class="list-group-item">
-                            <a href="{{ route('jobs.show', $job->id) }}">{{ $job->title }}</a>
-                            <p class="text-muted">{{ $job->company_name }}</p>
-                        </li>
-                    @endforeach
-                </ul>
-            @else
-                <p>No featured jobs available at this time.</p>
-            @endif
-        </div>
-    </section>
-    <section class="row mt-5">
-        <div class="col-md-6">
-            <h2>About [Job Board Name]</h2>
-            <p>[Insert description of your job board platform and its mission]</p>
-        </div>
-        <div class="col-md-6">
-            <h2>Call to Action</h2>
-            <ul>
-                @auth
-                    <li><a href="{{ route('jobs.create') }}">Post a Job</a></li>
-                @else
-                    <li><a href="{{ route('register') }}">Create a Free Account</a></li>
-                    <li><a href="{{ route('login') }}">Sign In</a></li>
-                @endauth
-                <li><a href="#">Browse Job Categories</a></li>
-                <li><a href="#">Learn About Job Hunting Resources</a></li>
-            </ul>
+            <div class="row">
+                @foreach ($featuredJobs as $job)
+                    <div class="col-md-6 mb-3">
+                        <a href="{{ route('job.show', $job->id) }}" class="job-card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $job->title }}</h5>
+                                <p class="card-text">{{ $job->company->name }}</p>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-map"></i> {{ $job->location }}</li>
+                                    <li><i class="bi bi-briefcase"></i> {{ $job->category }}</li>
+                                </ul>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    <section class="all-jobs">
+        <h2>All Jobs</h2>
+        <form action="{{ route('jobs.search') }}" method="GET" class="mb-3">
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" name="keyword" placeholder="Search by keyword" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <select name="category" class="form-control">
+                        <option value="">Select Category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="location" class="form-control">
+                        <option value="">Select Location</option>
+                        @foreach ($locations as $location)
+                            <option value="{{ $location->id }}">{{ $location->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+        <div class="job-listings">
+            @foreach ($jobs as $job)
+                <div class="job-card mb-3">
+                    <a href="{{ route('job.show', $job->id) }}" class="card-body">
+                        <h5 class="card-title">{{ $job->title }}</h5>
+                        <p class="card-text">{{ $job->company->name }}</p>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-map"></i> {{ $job->location }}</li>
+                            <li><i class="bi bi-briefcase"></i> {{ $job->category }}</li>
+                        </ul>
+                    </a>
+                </div>
+            @endforeach
         </div>
     </section>
 </main>
-<footer class="container-fluid bg-dark text-white p-3 mt-5">
-    <p>&copy; [TruckApply.com] </p>
-</footer>
+
+@include('layouts.partials.footer')
+
+@include('layouts.partials.scripts')
+</body>
+</html>
